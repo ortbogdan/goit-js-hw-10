@@ -9,18 +9,31 @@ inputRef.addEventListener('input', debounce(onInputGetCountry, DEBOUNCE_DELAY));
 
 function onInputGetCountry(){
     
-    const value = inputRef.value.trim();
-    fetchCountries(value).then(countries =>{return  makeMarkup(countries)})
-    console.log(countries)
+    let value = inputRef.value.trim();
+    fetchCountries(value)
+    .then(response => {
+        if(!response.ok) {
+            throw Error(response.statusText);
+        }
+        return response.json();
+    }
+    ).then(countries =>{
+        if(countries.length > 10) {
+            console.log ("Too many matches found. Please enter a more specific name.")
+        }
+        else{ 
+        return makeMarkup(countries)}
+        }).catch(error=> console.log("Oops, there is no country with that name"))
  }
 
 
  
 
 function makeMarkup (countries) {
-    if (countries.length > 10) {
-        console.log("Too many matches found. Please enter a more specific name.")
-    }
-    const contryMarkup = countries.map(country =>`<li class="country-list__item"><svg class="country-list__flag"><use class="country-list__flag" href=${country.flags.svg}></use></svg>${country.name.official}</li>`).join('');
-    listRef.insertAdjacentHTML('beforeend', contryMarkup)
+    
+    listRef.innerHTML = countries.map(({name, flags}) =>`<li class="country-list__item">
+    <img src="${flags.svg}" alt="${name.official} width="30" height="20">
+    <span class="country-list__name">${name.official}<span>
+    </li>`).join('');
+    
 }
