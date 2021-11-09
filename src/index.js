@@ -1,6 +1,8 @@
 import './css/styles.css';
 import {fetchCountries} from './fetchCountries.js'
 import debounce from 'lodash.debounce'
+import Notiflix from 'notiflix'
+
 const DEBOUNCE_DELAY = 300;
 const listRef = document.querySelector('.country-list');
 const inputRef = document.querySelector('input#search-box');
@@ -19,11 +21,12 @@ function onInputGetCountry(){
     }
     ).then(countries =>{
         if(countries.length > 10) {
-            console.log ("Too many matches found. Please enter a more specific name.")
+            console.log(countries.length)
+            Notiflix.Notify.info("Too many matches found. Please enter a more specific name.")
         }
         else{ 
         return makeMarkup(countries)}
-        }).catch(error=> console.log("Oops, there is no country with that name"))
+        }).catch(error=> Notiflix.Notify.failure("Oops, there is no country with that name"))
  }
 
 
