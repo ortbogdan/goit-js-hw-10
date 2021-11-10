@@ -1,5 +1,5 @@
 import './css/styles.css';
-import {fetchCountries} from './api.js'
+import {fetchCountries} from './fetchCountries.js'
 import debounce from 'lodash.debounce'
 import Notiflix from 'notiflix'
 
@@ -11,7 +11,8 @@ const infoRef = document.querySelector('.country-info');
 inputRef.addEventListener('input', debounce(onInputGetCountry, DEBOUNCE_DELAY));
 
 function onInputGetCountry(){
-    
+    listRef.innerHTML ='';
+    infoRef.innerHTML = '';
     const value = inputRef.value.trim();
     fetchCountries(value)
     .then(response => {
@@ -22,8 +23,8 @@ function onInputGetCountry(){
     }
     ).then(countries =>{
         if(countries.length > 10) {
-            console.log(countries.length)
-            Notiflix.Notify.info("Too many matches found. Please enter a more specific name.")
+            Notiflix.Notify.info("Too many matches found. Please enter a more specific name.");
+            return
         }
         if (countries.length === 1){
            return makeCountryMarkup(countries)
@@ -33,23 +34,22 @@ function onInputGetCountry(){
         }).catch(console.log)
  }
 
-
- 
-
 function makeCountriesMarkup (countries) {
+    
     listRef.innerHTML = countries.map(({name, flags}) =>`<li class="country-list__item">
-    <img src="${flags.svg}" alt="${name.official} width="30" height="20">
-    <span class="country-list__name">${name.official}<span>
+    <img src="${flags.svg}" alt="${name.common} width="30" height="20">
+    <span class="country-list__name">${name.common}<span>
     </li>`).join('');   
 }
 function makeCountryMarkup (country) {
-    console.log(country[0])
-    const {name, flags, capital, population, languages} = country[0]
-      return  infoRef.innerHTML = `<h1><img src="${flags.svg}" alt="${name} width="50" height="50"">${name.common}<h1>
-        <ul>
-        <li>Capital:${capital}</li>
-        <li>Population:${population}</li>
-        <li>Languages:${languages.values()}</li>
+    
+    const {flags, name,  capital,  languages, population} = country[0]
+    const lang = Object.values(languages).join(', ')
+      return infoRef.innerHTML = `<h1><img class="country-info__img" src="${flags.svg}" alt="${name.common} width="30" height="30"">${name.common}<h1>
+        <ul class="country-info__list">
+        <li class="country-info__item">Capital:<span class="country-info__value">${capital}</span></li>
+        <li class="country-info__item">Population:<span class="country-info__value">${population}</span></li>
+        <li class="country-info__item">Languages:<span class="country-info__value">${lang}</span></li>
         </ul>`
     }
 
