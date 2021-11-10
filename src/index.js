@@ -14,6 +14,9 @@ function onInputGetCountry(){
     listRef.innerHTML ='';
     infoRef.innerHTML = '';
     const value = inputRef.value.trim();
+    if (!value) {
+        return
+    }
     fetchCountries(value)
     .then(response => {
         if(!response.ok) {
